@@ -1,6 +1,6 @@
 # AIDebuggingAgent
 - Project structure
-com.ai.debugger.\
+
 controller.\
     └── DebugController.java.\
 
