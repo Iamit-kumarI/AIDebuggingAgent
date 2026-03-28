@@ -2,16 +2,16 @@
 - Project structure
 
 controller.\
-    └── DebugController.java.\
+    └── DebugController.java
 
 
  service.\
-    └── DebugOrchestrator.java.\
+    └── DebugOrchestrator.java
 
  agent.\
-     ├── ErrorAnalyzerAgent.java.\
-     ├── FixAgent.java.\
-     └── OptimizerAgent.java.\
+     ├── ErrorAnalyzerAgent.java
+     ├── FixAgent.java
+     └── OptimizerAgent.java
 
 model.\
-    └── DebugResponse.java.\
+    └── DebugResponse.java
