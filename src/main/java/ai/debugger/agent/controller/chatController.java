@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class chatController {
 
-    @Autowired
     private final ChatClient chatClient;
 
-    public chatController(ChatClient.Builder builder) {
-        this.chatClient = builder.build();
+    public chatController(ChatClient chatClient) {
+        this.chatClient = chatClient;
     }
 
     @GetMapping("/ask")

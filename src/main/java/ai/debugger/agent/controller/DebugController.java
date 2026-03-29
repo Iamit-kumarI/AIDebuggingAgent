@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class DebugController {
 
-    @Autowired
     private final ChatClient chatClient;
 
     public DebugController(ChatClient chatClient){
@@ -22,14 +21,26 @@ public class DebugController {
         String prompt= """
                 Your are senior java debugger exper.
                 
-                Analyze the following code
-                1. find bug
-                2. Explain the issue clearly
-                3. Provide corrected code
-                
+                Return response in json only in this format
+                 Return ONLY JSON:
+                    {
+                      "bug": "...",
+                      "explanation": "...",
+                      "fixedCode": "..."
+                    }
                 code:
                 """+code;
-        return chatClient.prompt().user(prompt).call().content();
+        String response=chatClient.prompt().user(prompt).call().content();
+        return extractJson(response);
+    }
+    private String extractJson(String response) {
+        int start = response.indexOf("{");
+        int end = response.lastIndexOf("}");
+
+        if (start!=-1&&end!= -1) {
+            return response.substring(start, end + 1);
+        }
+        return response; // fallback
     }
 
 }
