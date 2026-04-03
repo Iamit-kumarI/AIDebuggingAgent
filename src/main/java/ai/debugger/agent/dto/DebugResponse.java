@@ -1,7 +1,12 @@
 package ai.debugger.agent.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
 //import lombok.AllArgsConstructor;
 //
 //@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DebugResponse {
     private String bug;
     private String explanation;

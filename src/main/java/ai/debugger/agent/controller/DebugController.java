@@ -22,29 +22,45 @@ public class DebugController {
         this.chatClient=chatClient;
     }
     @PostMapping("/debug")
-    public DebugResponse  debugControll(@RequestBody String code){
-        String prompt= """
-                Your are senior java debugger exper.
-                
-                Return response in json only in this format
-                 Return ONLY JSON:
-                    {
-                      "bug": "...",
-                      "explanation": "...",
-                      "fixedCode": "..."
-                    }
-                code:
-                """+code;
-        String response=chatClient.prompt().user(prompt).call().content();
-        String json=extractJson(response);
-        json = fixJson(json);
+    public DebugResponse debugControll(@RequestBody String code) {
+
+        String prompt = """
+            You are a senior Java debugger expert.
+
+            Return ONLY valid JSON:
+            {
+              "bug": "...",
+              "explanation": "...",
+              "fixedCode": "..."
+            }
+
+            code:
+            """ + code;
+
         try {
-            ObjectMapper mapper=new ObjectMapper();
-            DebugResponse result=mapper.readValue(json,DebugResponse.class);
-            writeToFile("D:/agent/test/Test.java",result.getFixedCode());
-            return result;
+            DebugResponse response = chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .entity(DebugResponse.class);
+            writeToFile("D:/agent/test/Test.java", response.getFixedCode());
+            return response;
         } catch (Exception e) {
-            throw new RuntimeException("Filed to parse Ollama response"+json);
+            e.printStackTrace();
+            String raw = chatClient.prompt()
+                    .user(prompt)
+                    .call()
+                    .content();
+
+            System.out.println("RAW RESPONSE: " + raw);
+            try {
+                String json = extractJson(raw);
+                ObjectMapper mapper = new ObjectMapper();
+                DebugResponse response = mapper.readValue(json, DebugResponse.class);
+                writeToFile("D:/agent/test/Test.java", response.getFixedCode());
+                return response;
+            } catch (Exception ex) {
+                throw new RuntimeException("FINAL FAILURE -> RAW: " + raw, ex);
+            }
         }
     }
     public void writeToFile(String filePath,String code){
@@ -61,5 +77,13 @@ public class DebugController {
             return response.substring(start,end+1);
         }
         throw new RuntimeException("Invalid JSON response from AI: " + response);
+    }
+    private String extractFixedCode(String response) {
+        int start = response.indexOf("public class");
+        int end = response.lastIndexOf("}");
+        if (start != -1 && end != -1 && end > start) {
+            return response.substring(start, end + 1);
+        }
+        throw new RuntimeException("Failed to extract fixed code");
     }
 }
