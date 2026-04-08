@@ -42,7 +42,7 @@ public class DebugController {
                     .user(prompt)
                     .call()
                     .entity(DebugResponse.class);
-            writeToFile("D:/agent/Test.java", response.getFixedCode());
+            writeToFile("D:/agent/debuggedCode/Test.java", response.getFixedCode());
             return response;
         } catch (Exception e) {
             e.printStackTrace();
